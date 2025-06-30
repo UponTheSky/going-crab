@@ -1,9 +1,11 @@
 package main
 
 import (
+	"io"
 	"log"
 	"net"
 	"net/http"
+	"strings"
 )
 
 func main() {
@@ -48,5 +50,61 @@ func registerEndpoints(mux *http.ServeMux) {
 		}
 
 		w.Write([]byte(r.Method + "; " + methodPurpose + "\n"))
+	})
+
+	mux.HandleFunc("/params/{pathParam}", func(w http.ResponseWriter, r *http.Request) {
+		// path params
+		pathParam := r.PathValue("pathParam")
+
+		// queries
+		queryParams := r.URL.Query()
+		queryStringBuilder := &strings.Builder{}
+
+		for key, value := range queryParams {
+			queryStringBuilder.WriteString("(key=" + key + ",value=" + value[0] + ") ")
+		}
+
+		w.Write([]byte("path: " + pathParam + "\nquery: " + queryStringBuilder.String() + "\n"))
+	})
+
+	mux.HandleFunc("/header", func(w http.ResponseWriter, r *http.Request) {
+		headers := r.Header
+
+		headerStringBuilder := &strings.Builder{}
+
+		for key, value := range headers {
+			headerStringBuilder.WriteString("(key=" + key + ", value=" + value[0] + ") ")
+		}
+
+		w.Write([]byte("headers: " + headerStringBuilder.String() + "\n"))
+	})
+
+	mux.HandleFunc("/body", func(w http.ResponseWriter, r *http.Request) {
+		buf := make([]byte, 256)
+		n, err := r.Body.Read(buf)
+
+		if err != nil && err != io.EOF {
+			log.Fatal(err)
+		}
+
+		w.Write(buf[0:n])
+		w.Write([]byte("\n"))
+
+	})
+
+	mux.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			log.Fatal(err)
+		}
+
+		form := r.PostForm
+
+		formStringBuilder := &strings.Builder{}
+
+		for key, value := range form {
+			formStringBuilder.WriteString("(key=" + key + ", value=" + value[0] + ") ")
+		}
+
+		w.Write([]byte("form: " + formStringBuilder.String() + "\n"))
 	})
 }
