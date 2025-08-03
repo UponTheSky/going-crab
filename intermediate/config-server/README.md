@@ -8,7 +8,7 @@ Why don't you hardcode those parameters inside your project? There are several r
 2. You want to change the way your server is being deployed, without changing its codebase at all. 
 If you change your codebase, you have to pass several processes for it to be finally released. Tests, code review, build, pre-release, deploying on cloud, QA... Yes, it is horrible. But by tweaking a few variables in your config file, your job is done immediately. Only deploying matters now and you don't really care about the fresh new release of your server.
 
-There are many ways to do so, depending on how you deploy your server. Using Kubernetes or cloud vendor services like AWS EC2, you may do configuration using bunch of `.yaml` files or tools like [Terraform](https://developer.hashicorp.com/terraform). In this chapter, 
+There are many ways to do so, depending on how you deploy your server. Using Kubernetes or cloud vendor services like AWS EC2, you may do configuration using bunch of `.yaml` files or tools like [Terraform](https://developer.hashicorp.com/terraform). In this chapter, we will build our own way of injecting such config information into the server application.  
 
 ## Using Environment Variables
 One of the easiest and a basic way of configuring your server(or any kind of application) is using the environment variables defined on the process in which your server is running.  
