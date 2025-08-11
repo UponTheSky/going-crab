@@ -24,9 +24,10 @@ Of course, this function needs to be type-changed through `http.HandlerFunc`.
 
 But here are a few problems in the example code above. This `MyMiddleware` handler function needs to have `someHandler` from its same or outer scopes. Hence, if this function is defined at the global scope, `someHandler` also needs to be defined at the global scope. This reduces our flexibility of writing code in places we want.
 
-The other problem is that you can't generalize the handlers inside. What about `otherHandler`? Would you define the middlewares for each and every handlers defined in the application? 
+The other problem is that you can't generalize the handlers inside. What about `otherHandler`? Would you define the middlewares for each and every handlers defined in the application? In this chapter, we'd like to introduce two different methods - using Factory Method design pattern and separately defining a `handler` struct.
 
-To resolve this issue, we would like to define a factory method instead, where the factory produces a middleware, given a `handler`. 
+### Writing Middleware - Factory Method
+One of the simplest way of writing a middleware is to use [Factory Method design pattern](https://en.wikipedia.org/wiki/Factory_method_pattern), where a function "creates"(that's why we call it a "factory") a middleware, given a `handler`. 
 
 ```go
 func AddLoggingMiddleware(handler http.Handler) http.Handler {
@@ -45,6 +46,36 @@ func AddLoggingMiddleware(handler http.Handler) http.Handler {
 At first the code looks a little bit complicated, but it is not. `AddLoggingMiddleware` is only making a `handler` given another `handler` as its input argument. Inside this factory function, we define a middleware, which has the exact same form as `MyMiddleware`. Inside this "middleware", we pass the request to the given handler.
 
 That's it! We just defined a new middleware where it makes a log about the HTTP method and the endpoint of the given request, and the current time where the request is passed to. It is very simple but also an elegant way of using the type system of `net/http`.
+
+### Writing Middleware - Defining a `handler` struct
+Another (and probably more intuitive)method is to define a new `handler` struct.
+
+```go
+type LoggingMiddleware struct {
+	logger  *log.Logger
+	handler http.Handler
+}
+
+func (lm *LoggingMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// log the method of the request, path(endpoint), and the current time
+	lm.logger.Println(r.Method, r.URL.Path, time.Now())
+
+	// hands the request over to the given handler
+	lm.handler.ServeHTTP(w, r)
+}
+
+func main() {
+	// [...]
+	// adding the middleware can be done like this:
+	mainHandler := &LoggingMiddleware{
+		logger:  log.Default(),
+		handler: mux,
+	}
+	// [...]
+}
+```
+
+The advantage of this method compared to the Factory Method pattern is that you don't have to rely on the closure of the factory method, but instead you can have your own types of properties when adding a new middleware layer. Here, we use `*log.Logger` type for the logger of the middleware, but we can define a generalized logger interface instead, so that various loggers can be used in any circumstances. 
 
 ## Where to Put a Middleware?
 Where to put a middleware? It is totally upto the developer. If it is about logging, it is good for it to wrap the uppermost `ServeMux`(recall that a `ServeMux` is also of `handler` type), because it needs to log all the information of the incoming requests. However, you can narrow down the scope. If you have a middleware about a user auth and you also provide a public API that is open to anyone, you would only need to apply that middleware to user-specific features of the application, which are also represented as `handler`s. 
@@ -65,7 +96,12 @@ func main() {
 	})
 
 	// add our middleware here
-	mux = AddLoggingMiddleware(mux).(*http.ServeMux)
+	mainHandler := AddLoggingMiddleware(mux)
+	// or you can do: 
+	// mainHandler := &LoggingMiddleware{
+	// 	logger:  log.Default(),
+	// 	handler: mux,
+	// }
 
 	// listener
 	listener, err := net.Listen("tcp", ":8080") // if you need to pass context, use ListeConfig.Listen
