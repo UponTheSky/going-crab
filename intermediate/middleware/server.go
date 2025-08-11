@@ -8,17 +8,30 @@ import (
 	"time"
 )
 
-func AddLoggingMiddleware(handler http.Handler) http.Handler {
-	middlware := func(w http.ResponseWriter, r *http.Request) {
-		// log the method of the request, path(endpoint), and the current time
-		log.Println(r.Method, r.URL.Path, time.Now())
-
-		// hands the request over to the given handler
-		handler.ServeHTTP(w, r)
-	}
-
-	return http.HandlerFunc(middlware)
+type LoggingMiddleware struct {
+	logger  *log.Logger
+	handler http.Handler
 }
+
+func (lm *LoggingMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// log the method of the request, path(endpoint), and the current time
+	lm.logger.Println(r.Method, r.URL.Path, time.Now())
+
+	// hands the request over to the given handler
+	lm.handler.ServeHTTP(w, r)
+}
+
+// func AddLoggingMiddleware(handler http.Handler) http.Handler {
+// 	middlware := func(w http.ResponseWriter, r *http.Request) {
+// 		// log the method of the request, path(endpoint), and the current time
+// 		log.Println(r.Method, r.URL.Path, time.Now())
+
+// 		// hands the request over to the given handler
+// 		handler.ServeHTTP(w, r)
+// 	}
+
+// 	return http.HandlerFunc(middlware)
+// }
 
 func main() {
 	// mux and handlers
@@ -33,7 +46,11 @@ func main() {
 	})
 
 	// add our middleware here
-	mainHandler := AddLoggingMiddleware(mux)
+	// mainHandler := AddLoggingMiddleware(mux)
+	mainHandler := &LoggingMiddleware{
+		logger:  log.Default(),
+		handler: mux,
+	}
 
 	// listener
 	listener, err := net.Listen("tcp", ":8080") // if you need to pass context, use ListeConfig.Listen
