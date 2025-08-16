@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Test Cors</title>
+</head>
+
+<body>
+    <div class="test"></div>
+    <script>
+        const testDiv = document.querySelector(".test");
+
+        fetch("http://localhost:8080/cors",
+            {
+                method: "PATCH",
+                body: "not simple request",
+                headers: {
+                    "Content-Type": "text/plain",
+                    "X-My-Header": "foo",
+                    "Cookie": "42"
+                },
+                credentials: "include",
+            })
+            .then(res => res.text())
+            .then(text => {
+                testDiv.innerHTML = text;
+            });
+    </script>
+</body>
+
+</html>
