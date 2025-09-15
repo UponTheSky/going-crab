@@ -1,4 +1,4 @@
-# Register Endpoints
+# Chapter 2. Register Endpoints
 In the last chapter, we registered the endpoint of the root path(`/`) and make a response of string `"Hello, Server!"`. In this chapter, we will cover several patterns of registering API endpoints to a running server.
 
 Just like the previous chapter, run the example code using `go run .` in the current directory if you want. Try hitting the following endpoints using tools like `curl` and see what results come in the responses:

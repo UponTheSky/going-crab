@@ -1,4 +1,4 @@
-# Basic Request
+# Chapter 5. Basic Request
 In the previous chapter we covered how to write HTTP responses in the `net/http` package. Now we can *write and see the results* right away, it's time to *read* requests and implement our own logic to handle the requests. 
 
 **REMARK** There is a reason why I have chosen to write the response chapter **before** the request chapter. Even if we know how to read things from requests, it is of no use if we cannot check the result that our logic produces from the information that the requests give. As this book is written for programmer's fun, it is **very** important to check the results immediately and feel rewarded.

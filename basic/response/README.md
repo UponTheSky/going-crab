@@ -1,4 +1,4 @@
-# Basic Response
+# Chapter 4. Basic Response
 From this chapter and following several chapters, we will focus on writing endpoints that respond to various HTTP requests - mainly `GET`, `POST`, `PATCH`, and `DELETE`. But for handling these requests, we need to know how to write responses and send them back to the clients who made the requests.
 
 This chapter is mainly about writing simple and basic responses. Of course there must be various types of responses and we can't cover all of them. Hence we'll cover writing responses of the followings(with the corresponding endpoints in the example server):

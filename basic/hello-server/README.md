@@ -1,4 +1,4 @@
-# Hello, Server!
+# Chapter 1. Hello, Server!
 
 Ok, let's start our journey to writing a server in Go, with lot of fun!
 We'll begin with the most common and widely used type of server, a HTTP server.

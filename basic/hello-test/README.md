@@ -1,4 +1,4 @@
-# Test Your Server Automatically
+# Chapter 8. Hello, Test! 
 By far, we have checked out our servers through manual testing, using tools such as `curl` or [Postman](https://www.postman.com/). Manual testing is good in its own way, because it is simple to make a test and obtain the result immediately. Thus it has suited our needs over the course of the past chapters. 
 
 However, as we will build servers with more complex structures, manual testing is very limited in that:
