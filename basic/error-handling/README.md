@@ -1,4 +1,4 @@
-# Error Handling
+# Chapter 7. Error Handling
 For sure there must be errors in your application. Logging an error is important for your post-event handling, but you should do something when there is an error. In this chapter, we will briefly cover how to handle errors ocurring in a server using `net/http` package.
 
 In this chapter, check out the file `server.go` and test it with tools like `curl`. 

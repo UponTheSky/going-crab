@@ -1,4 +1,4 @@
-# Basic Log
+# Chapter 6. Basic Log
 Over the next three chapters, we will cover topics that are necessary for the robustness of our server: Logging, Error Handling, and Testing. This chapter is about Logging.
 
 You can assume that a log is a text message telling you what is going on inside the server. It could be a simple message like a user has made a GET request, or some serious events that may directly affect the user experience, such as one of your DB has been going down due to resource exhaustion. 

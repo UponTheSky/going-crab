@@ -1,4 +1,4 @@
-# Listen And Serve
+# Chapter 3. Listen And Serve
 
 For sure, registering `Handler`s to `ServeMux` doesn't do anything; you need to pass it to functions that run actual server processes so that any external HTTP requests can arrive at the server in real-time.
 
