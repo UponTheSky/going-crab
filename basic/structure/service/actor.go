@@ -35,7 +35,7 @@ func (s *ActorServiceImpl) Update(id string, dto dto.ActorUpsertDto) (actor, err
 	// NOTE: starts transaction here if the DB supports transactional operations
 	updatedActor, err := s.actorRepository.Update(id, dto)
 
-	// NOTE; ends transaction here if the DB supports transactional operations
+	// NOTE: ends transaction here if the DB supports transactional operations
 
 	return updatedActor, err
 }

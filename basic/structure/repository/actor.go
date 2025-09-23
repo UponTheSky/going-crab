@@ -25,7 +25,7 @@ var MockDB = map[string]actor{
 type SimpleDB = map[string]actor
 
 type ActorRepositoryImpl struct {
-	db SimpleDB // usually we have *sql.Conn here
+	db SimpleDB // usually we have *sql.Tx here
 }
 
 func (r *ActorRepositoryImpl) ReadAll() ([]actor, error) {
