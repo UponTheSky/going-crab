@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"path/filepath"
 	"structure/controller"
+	"structure/repository"
+	"structure/service"
 )
 
 func registerController(mux *http.ServeMux, c controller.Controller) {
@@ -21,7 +23,9 @@ func main() {
 	// mux
 	mux := http.NewServeMux()
 
-	actorController := controller.NewActorController()
+	repository := repository.NewActorRepository(repository.MockDB)
+	actorService := service.NewActorService(repository)
+	actorController := controller.NewActorController(actorService)
 	registerController(mux, actorController)
 
 	// listener
