@@ -407,24 +407,161 @@ Note that we injected one entity to the other via its interface, not its impleme
 ## Configurations and Refactoring
 I'm afraid we're not done yet. We want to separate the entire application from the server itself. For now, we initialize the application and run it inside `main()` all at once. 
 
-### Separate Server Runtime From the Application
-The HTTP server itself is not much related to the application logic. We first separate the application initialization logic inside a separate file `app.go`.
+### Separate Application logic From `main()`
+The HTTP server itself is not much related to the application logic. We first separate the application logic inside a separate file `app.go`.
 
 ```go
 // app.go
 
+type App struct {
+	controllers []controller.Controller
+}
 
+func NewApp() *App {
+	repository := repository.NewActorRepository(repository.MockDB)
+	actorService := service.NewActorService(repository)
+
+	// TODO: add midlewares for actorController
+	actorController := controller.NewActorController(actorService)
+
+	// TODO: add middlewares for the entire app
+	return &App{controllers: []controller.Controller{actorController}}
+}
 ```
 
-### 
+Then `main()` function will change as:
+
+```go
+func main() {
+	// mux
+	mux := http.NewServeMux()
+
+	app := NewApp()
+
+	registerController(mux, app.controllers[0])
+	
+	// --- snippet ---
+}
+```
+
+### Separate Server Construction Logic From `main()`
+The next turn is for the server construction logic. Let's create a separate `server.go` file in the root directory, and place the server-related parts here.
+
+```go
+// server.go
+
+define our own Server struct
+type Server struct {
+	protocol string
+	port     int
+	mux      *http.ServeMux
+	logger   *log.Logger
+}
+
+func NewServer(protocol string, port int) *Server {
+	// mux here
+	mux := http.NewServeMux()
+
+	// logger is for the server logging
+	logger := log.New(
+		os.Stderr,
+		"[Going Crab] ",
+		log.LstdFlags|log.Lshortfile|log.LUTC,
+	)
+
+	return &Server{
+		protocol: protocol,
+		port:     port,
+		mux:      mux,
+		logger:   logger,
+	}
+}
+```
+
+Next, we expect `Server` to "run" the application. What if we have a function like `Server.Run(*App)`? But since we want the `Server` to have pure server-related logic, we delegate registering the controllers of `App` to `App` itself. 
+
+First we implement `App.RegisterControllers(*ServerMux)`.
+
+```go
+// app.go
+
+func (a *App) RegisterController(mux *http.ServeMux) {
+	for _, c := range a.controllers {
+		for _, handler := range c.Handlers() {
+			pattern := fmt.Sprintf("%v %v", handler.Method, filepath.Join(c.Path(), handler.Path))
+			mux.Handle(pattern, handler.HandlerFunc)
+		}
+	}
+}
+```
+
+Now we implement `Server.Run(*App)`. 
+
+```go
+// server.go
+
+func (s *Server) Run(app *App) error {
+	// register the application controllers
+	app.RegisterController(s.mux)
+
+	// create http.Server instance
+	srv := &http.Server{}
+	srv.Addr = fmt.Sprintf(":%v", s.port)
+	srv.Handler = s.mux
+
+	// listen to the specified IP address
+	listener, err := net.Listen(s.protocol, srv.Addr)
+
+	if err != nil {
+		return err // unexpected error
+	}
+
+	defer listener.Close()
+
+	// run the http.Server
+	return srv.Serve(listener) // server.Serve always returns an error
+}
+```
+
+And what about our `main()`? We only generate `Server` and `App`, and combine them inside it, and then our short journey pauses here.
+
+```go
+func main() {
+	server := NewServer("tcp", 8080)
+	app := NewApp()
+
+	if err := server.Run(app); err != nil {
+		log.Fatal(err)
+	}
+}
+```
 
 ## Conclusion
+We haven't completed yet - there are lots of things to be added to put the application at production level. 
 
-## Exercise
-We haven't completed yet - there are lots of things to be added, but to name a few:
+Right at the moment we need to add the following features we have skipped:
 - logging errors 
 - separately defining error types(like `404NotFoundError`)
 - input DTO validation
-- unit and integration tests
+- unit and integration testing
 
-It is up to the readers to implement any of these features, but once you decide to do this exercise, please add test code!
+There are other topics that are also important and necessary:
+- graceful shutdown
+- middlewares
+- unit and integration tests
+- security
+- gRPC in place of HTTP
+- setting up a reverse proxy in front of the server
+and the list goes on and on...
+
+However, these features now can be easily added to the server, since we have converted once *spaghettied*(no intention to mock Italians though!) `main()` function into a structured and scalable server-side application. This has been the main purpose of this article, as a matter of fact.
+
+## Exercise
+1. I recommend you to do either one of the skipped features:
+- adding a global logger and using it throughout the entire application
+- defining custom HTTP errors for the code 400, 401, 404, and 500
+- validating `ActorUpsertDto`
+
+2. Add unit and integration test code for the application.
+
+3. (Optional)Adding another controller will be fun. Try add another model that is related to the `Actor` data model, so that we have a joined couple of relational database tables. Add a controller, service, and repository for the new model. Think about when we need to join the two tables. Then how would our API implementation be different from the current one, where we only have one single data model `Actor`? 
