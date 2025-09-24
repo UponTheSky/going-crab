@@ -12,6 +12,7 @@ The chapters are meant to be read in the following order, but each chapter is se
 [Ch6. Basic Log](./log/README.md)
 [Ch7. Error Handling](./error-handling/README.md)
 [Ch8. Hello, Test!](./hello-test/README.md)
+[Ch9. Structured Application](./structure/README.md)
 
 ## Exercise and Project
 TBA
