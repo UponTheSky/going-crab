@@ -172,6 +172,7 @@ http.HandleFunc("/cors", func(w http.ResponseWriter, r *http.Request) {
         w.Header().Add("Access-Controll-Allow-Methods", http.MethodOptions)
         w.Header().Add("Access-Controll-Allow-Methods", http.MethodPatch)
         w.Header().Add("Access-Controll-Allow-Headers", "X-My-Header")
+	    // Headers must be set before WriteHeader() is called
         w.WriteHeader(http.StatusNoContent)
     default:
         fmt.Fprintln(w, "testing cors successfully!")

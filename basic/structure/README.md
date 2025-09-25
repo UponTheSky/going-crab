@@ -289,7 +289,7 @@ HandlerFunc: func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// write the status header first(specific to when using encode/json's Encoder::Encode())
+	// Headers must be set before WriteHeader() is called
 	w.WriteHeader(http.StatusOK)
 
 	// return the json as response
