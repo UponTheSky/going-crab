@@ -18,6 +18,7 @@ func main() {
 			w.Header().Add("Access-Control-Allow-Methods", http.MethodOptions)
 			w.Header().Add("Access-Control-Allow-Methods", http.MethodPatch)
 			w.Header().Add("Access-Control-Allow-Headers", "X-My-Header")
+			// Headers must be set before WriteHeader() is called
 			w.WriteHeader(http.StatusNoContent)
 		default:
 			fmt.Fprintln(w, "testing cors successfully!")

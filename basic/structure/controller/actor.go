@@ -40,7 +40,6 @@ func NewActorController(actorService service.IActorService) *ActorController {
 						return
 					}
 
-					// write headers first before encoding and returning the data(specific in Go's encode/json)
 					w.WriteHeader(http.StatusOK)
 
 					// encode
@@ -130,7 +129,6 @@ func NewActorController(actorService service.IActorService) *ActorController {
 						return
 					}
 
-					// write the status header first(specific to when using encode/json's Encoder::Encode())
 					w.WriteHeader(http.StatusOK)
 
 					// return the json as response
