@@ -94,14 +94,16 @@ golang := &LanguageHandler{language: "go"}
 rust := &LanguageHandler{language: "rust"}
 swift := &LanguageHandler{language: "swift"}
 
-mux.Handle("/hello/go/{$}", golang)
-mux.Handle("/hello/rust/{$}", rust)
-mux.Handle("/hello/swift/{$}", swift)
+mux.Handle("GET /hello/go", golang)
+mux.Handle("GET /hello/rust", rust)
+mux.Handle("GET /hello/swift", swift)
 
 // [...]
 ```
 
 Here note that we use `ServeMux.HandleFunc`, but this is simply an adapter that lets us to pass a function of signature `func(w http.ResponseWriter, r *http.Request)`. Internally it is type-casted to `HandlerFunc`, which is, of course, the `Handler` type.  
+
+The [pattern matching rule](https://pkg.go.dev/net/http#ServeMux) could look difficult to grasp at a first glance. My personal thought is to go simple: define the API endpoints as simple as the clients want to invoke. But there is a cost; the client should match the endpoints correctly. For example, in the example above invoking the endpoint `/hello/go/` will not match `/hello/go` according to the matching rule explained on the `net/http` package docs page(`"GET /hello/go/"` or `"GET /hello/go/{o...}` will match by the way). In this case, my policy is not to append any trailing slashes and to ask the clients to follow the policy.
 
 **REMARK**
 It is sometimes quite confused with these namings - `Handler`, `HandlerFunc`, `Handle`, and `HandleFunc`. How I remember for distingushing them is as follows:
