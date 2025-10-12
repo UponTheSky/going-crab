@@ -168,6 +168,43 @@ There is another similar function called `http.ServeFile` in `net/http` package.
 
 You may find [this old Stack Overflow page](https://stackoverflow.com/questions/28793619/golang-what-to-use-http-servefile-or-http-fileserver) for comparing these two. However, note that the page is old and Go standard libraries have changed a lot since then. 
 
+## Headers and Status Code
+Although `net/http` has default settings when you don't set any headers and the status code, it is better to set them yourself for interacting with clients(either browsers or another server) effectively. 
+
+Headers can be set using `responseWriter.Header`. Either `Header.Set` or `Header.Add` works. But `Set` is when you want to set only one single header (key, value) pair, and calling it multiple times with the same key will override the previous values, whereas `Add` is for allowing multiple values for a single header key. See the following example:
+
+```go
+func headerHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("foo", "foo1") // this will be ignored
+	w.Header().Set("foo", "foo2") // this will be set as the header value
+
+	// both will be set
+	w.Header().Add("bar", "bar1")
+	w.Header().Add("bar", "bar2")
+
+	// set the status code
+	w.WriteHeader(http.StatusOK)
+
+	// write the response
+	fmt.Fprintln(w, "please check the header")
+
+	w.Header().Set("baz", "this-will-not-showup") // after either w.WriteHeader or w.Write is invoked
+}
+```
+
+There are two header keys, `foo` and `bar`. However, when you make a call to this API, the response headers will be like this:
+
+```sh
+Bar: bar1
+Bar: bar2
+Foo: foo2
+Date: Sun, 12 Oct 2025 13:51:42 GMT
+Content-Length: 24
+Content-Type: text/plain; charset=utf-8
+```
+
+Another important point to notice is that you need to set the headers *before* you invoke either `responseWriter.WriteHeader`. `responseWriter.Write` calls `responseWriter.WriteHeader` implicitly if it is not called beforehand, so it is a good practice to set the headers first, and then set the status code with `w.WriteHeader` and write the response body. In the above example, the header with key `baz` has been set but we don't get the value in the response, as it is set *after* `w.Write` has been called. 
+
 ## Conclusion
 We have covered basic methods of writing HTTP responses which are very common in today's Web. Now at least you can send clients any messages you want to say! 
 

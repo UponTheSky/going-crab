@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -18,6 +19,7 @@ func main() {
 
 	mux.HandleFunc("/string", stringHandler)
 	mux.HandleFunc("/json", jsonHandler)
+	mux.HandleFunc("/header", headerHandler)
 
 	staticFileHandler := http.FileServer(http.Dir("./static"))
 	mux.Handle("/", staticFileHandler)
@@ -64,4 +66,21 @@ func jsonHandler(w http.ResponseWriter, r *http.Request) {
 	if err := encoder.Encode(chow); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func headerHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("foo", "foo1") // this will be ignored
+	w.Header().Set("foo", "foo2") // this will be set as the header value
+
+	// both will be set
+	w.Header().Add("bar", "bar1")
+	w.Header().Add("bar", "bar2")
+
+	// set the status code
+	w.WriteHeader(http.StatusOK)
+
+	// write the response
+	fmt.Fprintln(w, "please check the header")
+
+	w.Header().Set("baz", "this-will-not-showup") // after either w.WriteHeader or w.Write is invoked
 }
