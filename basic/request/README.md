@@ -169,6 +169,32 @@ mux.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {
 
 Similar to headers or query parameters, the retrived values are a map object in Go. Note that you must call [`Request.ParseForm`](https://pkg.go.dev/net/http#Request.ParseForm) in advance, in order to retrive the form values from the given request.
 
+### Some Words on Input Validation
+From the perspective of security, it is important to protect the server resources from malicious attacks through external inputs. Although it is beyond the scope of this book to cover what common attacks are and how to avoid them, please keep in mind that all of them come from invalidated HTTP request inputs, such as path and body. 
+
+Compared to opinionated frameworks such as Spring or Django, Go's `net/http` provides none of such input parsing and validation logic, thus it is developer's responsibility to observe what the inputs are, how to parse them, and how to validate them. 
+
+For example, if you have a path parameter `id`, you must make sure this value is parsed into the right "id" data type that your application adopts for the database entities.
+
+```go
+mux.HandleFunc("PATCH /users/{id}", func(w http.ResponseWriter, r *http.Request) {
+    idParam := r.PathValue("id")
+
+    // parse and validate
+    id, err := strconv.Atoi(idParam)
+
+    if err != nil || id <= 0 {
+        log.Println(err)
+        http.Error(w, "invalid ID parameter type", http.StatusBadRequest)
+        return
+    }
+
+    // [...]
+})
+```
+
+Security should be your first priority for running a service, so do your best to make the attackers not get in your way.
+
 ## Conclusion
 Although we haven't covered all the important details of reading information from a HTTP request, we can at least write a server implementing simple I/O logics! Let's write a fun server with mock DBs in the next first challenge exercise! But before then, there are three prerequisite chapters that we would be better off covering: error handling, logging, and testing. Of course, we won't get into much of details right at the moment, because we need to enjoy our fruits ASAP! Even if those subjects seem to be a bit boring(and sometimes yes...), you would be greatful for knowing these topics as these reduces your debugging time significantly. Yeah, you've heard, *DEBUGGING*... 
 
