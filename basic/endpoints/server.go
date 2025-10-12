@@ -28,9 +28,9 @@ func main() {
 	rust := &LanguageHandler{language: "rust"}
 	swift := &LanguageHandler{language: "swift"}
 
-	mux.Handle("/hello/go/{$}", golang)
-	mux.Handle("/hello/rust/{$}", rust)
-	mux.Handle("/hello/swift/{$}", swift)
+	mux.Handle("GET /hello/go", golang)
+	mux.Handle("GET /hello/rust", rust)
+	mux.Handle("GET /hello/swift", swift)
 
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
