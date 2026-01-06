@@ -51,5 +51,8 @@ Check out your brand-new server with `curl` on another terminal: `curl http://lo
 ## Summary
 Writing an HTTP server in Bun is very simple and straightforward. Although there are quite a few options available for advanced configuration of a server, we would like to cover them in the later chapters. Also, note that we could also write not only HTTP but lower-level servers such as [TCP servers](https://bun.com/docs/runtime/networking/tcp), but those are beyond the interest of this book.
 
+## REMARK
+Too show incremental development of our server as we proceed the series of chapters, from now on we will write our server in `server.ts` in each of the chapter directories. 
+
 ## Exercise
 Add `/health` endpoint for health-checking. For the string message, `"Healthy"` would be alright  
