@@ -6,5 +6,8 @@ const server = Bun.serve({
     port: PORT,
     routes: {
         "/": () => new Response("Hello, Bun Server!\n"),
+        "/health": () => new Response("Healthy!\n", { status: 200 }),
     }
 });
+
+console.log(`Server running at ${server.url}`);
