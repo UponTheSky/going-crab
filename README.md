@@ -2,9 +2,9 @@
 A book on how to write an API server in [Bun](https://bun.com/) with fun.
 
 ## Before you read this book
-Install [Bun](https://bun.com/docs/installation) first(it is *blazingly* fast and simple). Once installed, you can create a brand new project using `Bun init` command elsewhere or simply run `Bun install` inside the directory of this book here to simply follow the written code here. However, I would like to recommend creating your own project(i.e. by `Bun init`) and develop your own server freely. 
+Install [Bun](https://bun.com/docs/installation) first (it is *blazingly* fast and simple). Once installed, you can create a brand new project using `bun init` command elsewhere, or simply run `bun install` inside the directory of this book here to simply follow the written code here. However, I would like to recommend creating your own project(i.e., by `bun init`) and developing your own server freely while following the content of the book. 
 
-If you have no experience in TypeScript, it is fine. I won't assume any deeper knowledge in TypeScript, so any very simple tutorial will do. But what I would suggest is to simply follow the book and reference any material once you're stuck on the language. But at least you would definitely be happy with the TypeScript language server(ISP)(VS Code has it by default for your information!).  
+If you have no experience in TypeScript, it is fine. I won't assume any deep knowledge in TypeScript, so any simple tutorial will do. What I would suggest is to simply follow the book and reference any material once you get stuck on the language. But at least you would definitely be happy with the TypeScript language server (LSP)(VS Code has it by default, for your information!).  
 
 ## Why This Project?
 This project is for gathering and polishing my knowledge of backend development. 
